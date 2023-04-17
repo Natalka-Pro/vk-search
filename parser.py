@@ -47,16 +47,28 @@ def print_FriendsToFile(user, number, file):
 	params = {
 		'beginning'	: 'https://api.vk.com/method',
 		'user' 		:  user,
-		'fields'	: "fields=bdate,city,country,sex",
 		'ending'	: f'access_token={access_token}&v={api_version}',
 	}
 	
-	url = '{beginning}/friends.get?user_id={user}&{fields}&lang=0&count={count}&offset={offset}&{ending}'
+	if type(user) is str and "/" in user: # обрезка ссылки
+		idx = user.rfind("/")
+		params['user'] = user[idx + 1 :]
+	
+	# получение id пользователя
+	url = '{beginning}/users.get?user_ids={user}&lang=0&{ending}'
+	# print(f"-{params['user']}-")
+	url_formatted = url.format(**params)
+	data = requests.get(url_formatted).json()
+	# print(data)
+	params['user'] = data["response"][0]["id"]
+	# print(params['user'])
 
+	fields = "fields=bdate,city,country,sex"
+	url = '{beginning}/friends.get?user_id={user}&{fields}&lang=0&count={count}&offset={offset}&{ending}'
 	for i in range(0, number, count):
 		if count + i >= number:
 			count = number - i
-		url_formatted = url.format(count = count, offset = i, **params)
+		url_formatted = url.format(count = count, offset = i, fields=fields, **params)
 		res_friends = requests.get(url_formatted)
 		data = res_friends.json().get("response")
 
@@ -76,7 +88,7 @@ def print_FriendsToFile(user, number, file):
 
 
 if __name__ == "__main__":
-	user = 168768958
+	user = 'https://vk.com/strong_machina'
 	file = 'response.txt'
 	number = 111
 	print_FriendsToFile(user, number, file)
