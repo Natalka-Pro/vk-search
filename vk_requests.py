@@ -4,10 +4,18 @@ import asyncio
 
 def print_dict(d, indent = 4, local_indent = 0):
     """
-    Input:  d, <class 'dict'>
-            indent, <class 'int'> - the number of spaces in the indentation, constant, equal to 4
-            local_indent, <class 'int'> - the number of spaces, added to each line in the output
-    Return: <class  'str'>, it contains a "beautiful" RECURSIVE representation of the input
+    Makes a "beautiful" recursive representation of the dictionary
+
+    :param d: dictionary
+    :type d: dict
+
+    :param indent: the number of spaces in the indentation
+    :type indent: int
+
+    :param local_indent: the number of spaces, added to each line in the output
+    :type local_indent: int
+
+    :return: str
     """
     if type(d) is not dict:
         return f"{d}\n"
@@ -25,6 +33,14 @@ def print_dict(d, indent = 4, local_indent = 0):
 
 
 def print_ListOfDicts(l):
+    """
+    Makes a "beautiful" representation of the dictionary list
+
+    :param l: list of dictionaries
+    :type l: list
+
+    :return: str
+    """
     s = ""
     indent = 4
     local_indent = 0
@@ -34,12 +50,21 @@ def print_ListOfDicts(l):
     return s
 
 
-def required_fields_dict(d : dict, fields = ""):
+def required_fields_dict(d, fields = ""):
     """
-    Return: new dict with fewer keys
+    Make a new dictionary with fewer keys
+
+    :param d: dictionary
+    :type d: dict
+
+    :param fields: comma-separated field names other than "id,first_name,last_name,can_access_closed,is_closed,"
+    :type fields: str
+
+    :return: dict
     """
     if type(d) is not dict:
         return d
+    
     fields = "id,first_name,last_name,can_access_closed,is_closed," +  fields
     fields = fields.replace(",", " ").split()
     new_dict = {}
@@ -49,7 +74,15 @@ def required_fields_dict(d : dict, fields = ""):
     return new_dict
 
 
-def required_fields_list(l : list, fields = ""):
+def required_fields_list(l, fields = ""):
+    """
+    Calls a function required_fields_dict for each list item
+
+    :param l: list of dictionaries
+    :type l: list
+
+    :return: list of dictionaries
+    """
     new_list = []
     for d in l:
         new_list += [required_fields_dict(d, fields)]
@@ -58,6 +91,15 @@ def required_fields_list(l : list, fields = ""):
 
 
 async def get_id(api, screen_name):
+    """Gets the user's ID by short name
+    
+    :param api: vkbottle.API
+
+    :param screen_name: user ID or short name
+    :type screen_name: str
+
+    :return: int
+    """
     response = await api.users.get(user_ids = screen_name)
     response = response[0].dict()
     id = response["id"]
@@ -65,6 +107,15 @@ async def get_id(api, screen_name):
 
 
 async def link_processing(api, link):
+    """Gets the user's ID from the link to his page
+    
+    :param api: vkbottle.API
+
+    :param link: link to the user's page
+    :type link: str
+
+    :return: int
+    """
     if type(link) is not str:
         return link
     elif "/" in link:           # обрезка ссылки
@@ -104,6 +155,10 @@ def get_friends_script(api, count, params):
 
 
 def find_friends(name, list_friends):
+    """Search by first name or last name in the list_friends
+    
+    :return: list
+    """
     idx = []
     for elem in list_friends:
         if name in elem["first_name"] or name in elem["last_name"]:

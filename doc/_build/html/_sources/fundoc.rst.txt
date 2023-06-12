@@ -1,0 +1,6 @@
+Technical documentation
+==================
+
+.. automodule:: my_requests
+	:members:
+	:undoc-members:
